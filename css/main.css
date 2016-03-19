@@ -1,0 +1,15 @@
+body {
+    font-family: 'Roboto Condensed';
+    margin: 0;
+    background: #000000;
+}
+
+h1 {
+    color: #FFFFFF;
+    margin: 0;
+}
+
+#datetime {
+    margin: 50px 0 0 50px;
+    position: absolute;
+}
