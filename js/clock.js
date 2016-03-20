@@ -30,5 +30,5 @@ function GetClock() {
     if (nsec <= 9) nsec = "0" + nsec;
 
     $("#date").html(tday[nday] + ", " + tmonth[nmonth] + " " + ndate + ", " + nyear);
-    $("#time").html(nhour + ":" + nmin + ":" + nsec + ap);
+    $("#time").html(nhour + ":" + nmin + ap);
 }

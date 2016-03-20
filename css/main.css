@@ -2,14 +2,31 @@ body {
     font-family: 'Roboto Condensed';
     margin: 0;
     background: #000000;
+    color: #FFFFFF;
 }
 
 h1 {
-    color: #FFFFFF;
     margin: 0;
+    font-size: 24pt;
 }
 
-#datetime {
+#datetime-container {
     margin: 50px 0 0 50px;
     position: absolute;
+}
+
+#time {
+    font-size: 44pt
+}
+
+#message-container {
+    position: absolute;
+    bottom: 50px;
+    width: 100%;
+    text-align: center;
+}
+
+#message {
+    font-size: 36pt;
+    font-weight: 300;
 }
