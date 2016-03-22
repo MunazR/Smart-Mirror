@@ -29,6 +29,7 @@ h1 {
 #datetime-container {
     margin: 40px 0 0 40px;
     position: absolute;
+    width: 33%;
 }
 
 #time {
@@ -50,11 +51,17 @@ h1 {
 #weather-container {
     float: right;
     margin: 40px 40px 0 0;
+    width: 33%;
 }
 
 #location,
 #current-temp {
     font-weight: 700;
     font-size: 24pt;
-    float: right;
+    text-align: right;
+}
+
+#travel-time {
+    font-weight: 700;
+    font-size: 24pt;
 }

@@ -1,5 +1,6 @@
-var message_last_updated, weather_last_updated;
-var weatherAppId = "b3088fdcc0dd30e437a03dd8a18bc936";
+var messageLastUpdated, weatherLastUpdated, travelLastUpdated;
+var weatherAppId = "b3088fdcc0dd30e437a03dd8a18bc936",
+    googleMapsApiKey = "AIzaSyCQRn2-Ig32JffCh_9xF1NxKuS4nkMc868";
 
 $(function() {
     console.log("Ready to start!");
@@ -8,17 +9,19 @@ $(function() {
 
     updateMessage();
     updateWeather();
+    updateTravel();
 
     if (updateEnabled == "true") {
         setInterval(updateMessage, 60 * 1000);
         setInterval(updateWeather, 15 * 60 * 1000);
+        setInterval(updateTravel, 15 * 60 * 1000);
     }
 });
 
 function updateMessage() {
     var now = new Date();
-    if (!message_last_updated || message_last_updated.getHours() !== now.getHours()) {
-        message_last_updated = now;
+    if (!messageLastUpdated || messageLastUpdated.getHours() !== now.getHours()) {
+        messageLastUpdated = now;
 
         refreshMessageInfo(function(sunrise, noon, sunset, eveningStart, eveningEnd) {
             var message = "";
@@ -50,8 +53,8 @@ function updateMessage() {
 function updateWeather() {
     var now = new Date();
 
-    if (!weather_last_updated || weather_last_updated.getDay() !== now.getDay()) {
-        weather_last_updated = now;
+    if (!weatherLastUpdated || weatherLastUpdated.getHours() !== now.getHours()) {
+        weatherLastUpdated = now;
 
         refreshWeatherInfo(function(current, forecast) {
             $("#location").html(current.name);
@@ -79,6 +82,18 @@ function updateWeather() {
             };
 
             $("#forecast-container").html(template(todayWeather) + template(tomorrowWeather) + template(dayAfterWeather));
+        });
+    }
+}
+
+function updateTravel() {
+    var now = new Date();
+
+    if (!travelLastUpdated || travelLastUpdated.getHours() !== now.getHours()) {
+        travelLastUpdated = now;
+
+        refreshTravelInfo(function(travelData) {
+            $("#travel-time").html("Time to work: " + travelData.rows[0].elements[0].duration.text);
         });
     }
 }
@@ -119,12 +134,13 @@ function refreshMessageInfo(cb) {
 function refreshWeatherInfo(cb) {
     var lat = getParameterByName("lat");
     var lng = getParameterByName("lng");
+    var unit = getParameterByName("unit") || "metric";
 
     if (!lat || !lng) {
         return;
     }
 
-    var url = "http://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lng + "&units=metric&appid=" + weatherAppId;
+    var url = "http://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lng + "&units=" + unit + "&appid=" + weatherAppId;
     var currentWeather, forecastWeather;
 
     $.get(url, function(data, status) {
@@ -134,7 +150,7 @@ function refreshWeatherInfo(cb) {
 
         currentWeather = data;
 
-        url = "http://api.openweathermap.org/data/2.5/forecast/daily?lat=" + lat + "&lon=" + lng + "&units=metric&cnt=2&mode=json&appid=" + weatherAppId;
+        url = "http://api.openweathermap.org/data/2.5/forecast/daily?lat=" + lat + "&lon=" + lng + "&units=" + unit + "&cnt=2&mode=json&appid=" + weatherAppId;
 
         $.get(url, function(data, status) {
             if (status !== "success") {
@@ -145,6 +161,34 @@ function refreshWeatherInfo(cb) {
 
             cb(currentWeather, forecastWeather);
         });
+    });
+}
+
+function refreshTravelInfo(cb) {
+    var originLat = getParameterByName("lat");
+    var originLng = getParameterByName("lng");
+    var destLat = getParameterByName("worklat");
+    var destLng = getParameterByName("worklng");
+    var unit = getParameterByName("unit") || "metric";
+
+    if (!originLat || !originLng || !destLat || !destLng) {
+        return;
+    }
+
+    var origin = new google.maps.LatLng(originLat, originLng);
+    var destination = new google.maps.LatLng(destLat, destLng);
+    var service = new google.maps.DistanceMatrixService();
+
+    service.getDistanceMatrix({
+        origins: [origin],
+        destinations: [destination],
+        travelMode: google.maps.TravelMode.DRIVING
+    }, function(response, status) {
+        if (status !== "OK") {
+            alert("Error getting travel data");
+        }
+
+        cb(response);
     });
 }
 
