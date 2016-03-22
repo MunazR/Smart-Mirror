@@ -10,8 +10,24 @@ h1 {
     font-size: 24pt;
 }
 
+.weather-container {
+    text-align: right;
+}
+
+.temp {
+    bottom: 15px;
+    position: relative;
+    font-weight: 700;
+    font-size: 18pt;
+}
+
+.condition {
+    height: 50px;
+    width: 50px;
+}
+
 #datetime-container {
-    margin: 50px 0 0 50px;
+    margin: 40px 0 0 40px;
     position: absolute;
 }
 
@@ -21,7 +37,7 @@ h1 {
 
 #message-container {
     position: absolute;
-    bottom: 50px;
+    bottom: 40px;
     width: 100%;
     text-align: center;
 }
@@ -29,4 +45,16 @@ h1 {
 #message {
     font-size: 36pt;
     font-weight: 300;
+}
+
+#weather-container {
+    float: right;
+    margin: 40px 40px 0 0;
+}
+
+#location,
+#current-temp {
+    font-weight: 700;
+    font-size: 24pt;
+    float: right;
 }

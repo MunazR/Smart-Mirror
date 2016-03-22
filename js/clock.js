@@ -2,11 +2,11 @@ var tday = new Array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Fr
 var tmonth = new Array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
 
 $(function() {
-    GetClock();
-    setInterval(GetClock, 1000);
+    updateClock();
+    setInterval(updateClock, 1000);
 });
 
-function GetClock() {
+function updateClock() {
     var d = new Date();
     var nday = d.getDay(),
         nmonth = d.getMonth(),
