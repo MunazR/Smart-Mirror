@@ -17,7 +17,7 @@ $(function() {
 
 function updateMessage() {
     var now = new Date();
-    if (!message_last_updated || message_last_updated.getHours() != now.getHours()) {
+    if (!message_last_updated || message_last_updated.getHours() !== now.getHours()) {
         message_last_updated = now;
 
         refreshMessageInfo(function(sunrise, noon, sunset, eveningStart, eveningEnd) {
@@ -50,24 +50,35 @@ function updateMessage() {
 function updateWeather() {
     var now = new Date();
 
-    if (!weather_last_updated || weather_last_updated.getDay() != now.getDay()) {
+    if (!weather_last_updated || weather_last_updated.getDay() !== now.getDay()) {
         weather_last_updated = now;
 
         refreshWeatherInfo(function(current, forecast) {
             $("#location").html(current.name);
             $("#current-temp").html("It is currently " + Math.round(current.main.temp) + "&#8451");
 
-            var currentWeatherContainer = $("#current-weather-container");
-            currentWeatherContainer.find(".temp").html(Math.round(current.main.temp_min) + "/" + Math.round(current.main.temp_max));
-            currentWeatherContainer.find(".condition").attr("src", "http://openweathermap.org/img/w/" + current.weather[0].icon + ".png")
+            var source = $("#weather-template").html();
+            var template = Handlebars.compile(source);
 
-            var tomorrowWeatherContainer = $("#tomorrow-weather-container");
-            tomorrowWeatherContainer.find(".temp").html(Math.round(forecast.list[0].temp.min) + "/" + Math.round(forecast.list[0].temp.max));
-            tomorrowWeatherContainer.find(".condition").attr("src", "http://openweathermap.org/img/w/" + forecast.list[0].weather[0].icon + ".png")
+            var todayWeather = {
+                max_temp: Math.round(current.main.temp_max),
+                min_temp: Math.round(current.main.temp_min),
+                condition_icon: "http://openweathermap.org/img/w/" + current.weather[0].icon + ".png"
+            };
 
-            var dayAfterWeatherContainer = $("#day-after-weather-container");
-            dayAfterWeatherContainer.find(".temp").html(Math.round(forecast.list[1].temp.min) + "/" + Math.round(forecast.list[1].temp.max));
-            dayAfterWeatherContainer.find(".condition").attr("src", "http://openweathermap.org/img/w/" + forecast.list[1].weather[0].icon + ".png")
+            var tomorrowWeather = {
+                max_temp: Math.round(forecast.list[0].temp.max),
+                min_temp: Math.round(forecast.list[0].temp.min),
+                condition_icon: "http://openweathermap.org/img/w/" + forecast.list[0].weather[0].icon + ".png"
+            };
+
+            var dayAfterWeather = {
+                max_temp: Math.round(forecast.list[1].temp.max),
+                min_temp: Math.round(forecast.list[1].temp.min),
+                condition_icon: "http://openweathermap.org/img/w/" + forecast.list[1].weather[0].icon + ".png"
+            };
+
+            $("#forecast-container").html(template(todayWeather) + template(tomorrowWeather) + template(dayAfterWeather));
         });
     }
 }
