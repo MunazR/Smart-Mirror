@@ -29,7 +29,7 @@ h1 {
 #datetime-container {
     margin: 40px 0 0 40px;
     position: absolute;
-    width: 33%;
+    width: 50%;
 }
 
 #time {
@@ -38,20 +38,20 @@ h1 {
 
 #message-container {
     position: absolute;
-    bottom: 40px;
+    bottom: 0;
+    margin-bottom: 120px;
     width: 100%;
     text-align: center;
 }
 
 #message {
     font-size: 36pt;
-    font-weight: 300;
 }
 
 #weather-container {
     float: right;
     margin: 40px 40px 0 0;
-    width: 33%;
+    width: 50%;
 }
 
 #location,
@@ -63,5 +63,14 @@ h1 {
 
 #travel-time {
     font-weight: 700;
+    font-size: 24pt;
+}
+
+#news-container {
+    position: absolute;;
+    bottom: 0;
+    margin-bottom: 40px;
+    text-align: center;
+    width: 100%;
     font-size: 24pt;
 }

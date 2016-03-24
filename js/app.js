@@ -1,6 +1,6 @@
-var messageLastUpdated, weatherLastUpdated, travelLastUpdated;
+var messageLastUpdated, weatherLastUpdated, travelLastUpdated, newsLastUpdated;
 var weatherAppId = "b3088fdcc0dd30e437a03dd8a18bc936",
-    googleMapsApiKey = "AIzaSyCQRn2-Ig32JffCh_9xF1NxKuS4nkMc868";
+    alchemyApiKey = "eaa9a9963af51af296826982a62980c6edb7af08";
 
 $(function() {
     console.log("Ready to start!");
@@ -10,11 +10,13 @@ $(function() {
     updateMessage();
     updateWeather();
     updateTravel();
+    updateNews();
 
     if (updateEnabled == "true") {
         setInterval(updateMessage, 60 * 1000);
         setInterval(updateWeather, 15 * 60 * 1000);
         setInterval(updateTravel, 15 * 60 * 1000);
+        setInterval(updateNews, 60 * 60 * 1000);
     }
 });
 
@@ -94,6 +96,24 @@ function updateTravel() {
 
         refreshTravelInfo(function(travelData) {
             $("#travel-time").html("Time to work: " + travelData.rows[0].elements[0].duration.text);
+        });
+    }
+}
+
+function updateNews() {
+    var now = new Date();
+
+    if (!newsLastUpdated || newsLastUpdated.getHours() !== now.getHours()) {
+        newsLastUpdated = now;
+
+        refreshNewsInfo(function(newsData) {
+            var headlines = "";
+
+            for (var i = 0; i < newsData.length; i++) {
+                headlines += newsData[i].source.enriched.url.title + " || ";
+            }
+
+            $("#news-container").html(headlines);
         });
     }
 }
@@ -189,6 +209,24 @@ function refreshTravelInfo(cb) {
         }
 
         cb(response);
+    });
+}
+
+function refreshNewsInfo(cb) {
+    var query = getParameterByName("news");
+
+    if (!query) {
+        return;
+    }
+
+    var url = "https://gateway-a.watsonplatform.net/calls/data/GetNews?apikey=" + alchemyApiKey + "&outputMode=json&start=now-1d&end=now&maxResults=10&q.enriched.url.title=" + query + "&return=enriched.url.title";
+
+    $.get(url, function(data, status) {
+        if (status !== "success") {
+            alert("Error getting news");
+        }
+
+        return cb(data.result.docs);
     });
 }
 
