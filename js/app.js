@@ -2,6 +2,9 @@ var messageLastUpdated, weatherLastUpdated, travelLastUpdated, newsLastUpdated;
 var weatherAppId = "b3088fdcc0dd30e437a03dd8a18bc936",
     alchemyApiKey = "eaa9a9963af51af296826982a62980c6edb7af08";
 
+var newsHeadlines = [],
+    newsIndex = 0;
+
 $(function() {
     console.log("Ready to start!");
 
@@ -16,7 +19,7 @@ $(function() {
         setInterval(updateMessage, 60 * 1000);
         setInterval(updateWeather, 15 * 60 * 1000);
         setInterval(updateTravel, 15 * 60 * 1000);
-        setInterval(updateNews, 60 * 60 * 1000);
+        setInterval(updateNews, 15 * 1000);
     }
 });
 
@@ -106,15 +109,27 @@ function updateNews() {
     if (!newsLastUpdated || newsLastUpdated.getHours() !== now.getHours()) {
         newsLastUpdated = now;
 
-        refreshNewsInfo(function(newsData) {
-            var headlines = "";
+        refreshNewsInfo(function(data) {
+            if (data && data.result && data.result.docs && data.result.docs.length) {
+                var newsData = data.result.docs;
+                newsHeadlines = [];
+                newsIndex = 0;
 
-            for (var i = 0; i < newsData.length; i++) {
-                headlines += newsData[i].source.enriched.url.title + " || ";
+                for (var i = 0; i < newsData.length; i++) {
+                    newsHeadlines.push(newsData[i].source.enriched.url.title);
+                }
             }
-
-            $("#news-container").html(headlines);
         });
+    } else {
+        if (newsHeadlines.length === 0) {
+            return;
+        }
+
+        if (newsIndex === newsHeadlines.length) {
+            newsIndex = 0;
+        }
+
+        $("#news-container").html(newsHeadlines[newsIndex++]);
     }
 }
 
@@ -219,14 +234,14 @@ function refreshNewsInfo(cb) {
         return;
     }
 
-    var url = "https://gateway-a.watsonplatform.net/calls/data/GetNews?apikey=" + alchemyApiKey + "&outputMode=json&start=now-1d&end=now&maxResults=10&q.enriched.url.title=" + query + "&return=enriched.url.title";
+    var url = "https://gateway-a.watsonplatform.net/calls/data/GetNews?apikey=" + alchemyApiKey + "&outputMode=json&start=now-1d&end=now&maxResults=20&q.enriched.url.title=" + query + "&return=enriched.url.title";
 
     $.get(url, function(data, status) {
         if (status !== "success") {
             alert("Error getting news");
         }
 
-        return cb(data.result.docs);
+        return cb(data);
     });
 }
 
