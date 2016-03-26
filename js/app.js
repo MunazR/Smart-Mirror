@@ -1,7 +1,6 @@
 var shortDay = new Array("Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat");
 var messageLastUpdated, weatherLastUpdated, travelLastUpdated, newsLastUpdated;
-var weatherAppId = "b3088fdcc0dd30e437a03dd8a18bc936",
-    alchemyApiKey = "eaa9a9963af51af296826982a62980c6edb7af08";
+var weatherAppId = "b3088fdcc0dd30e437a03dd8a18bc936";
 
 var newsHeadlines = [],
     newsIndex = 0;
@@ -106,13 +105,13 @@ function updateNews() {
         newsLastUpdated = now;
 
         refreshNewsInfo(function(data) {
-            if (data && data.result && data.result.docs && data.result.docs.length) {
-                var newsData = data.result.docs;
+            if (data && data.feed && data.feed.entries && data.feed.entries.length) {
+                var newsData = data.feed.entries;
                 newsHeadlines = [];
                 newsIndex = 0;
 
                 for (var i = 0; i < newsData.length; i++) {
-                    newsHeadlines.push(newsData[i].source.enriched.url.title);
+                    newsHeadlines.push(newsData[i].title);
                 }
             }
         });
@@ -223,20 +222,12 @@ function refreshTravelInfo(cb) {
 }
 
 function refreshNewsInfo(cb) {
-    var query = getParameterByName("news");
-
-    if (!query) {
-        return;
-    }
-
-    var url = "https://gateway-a.watsonplatform.net/calls/data/GetNews?apikey=" + alchemyApiKey + "&outputMode=json&start=now-1d&end=now&maxResults=20&q.enriched.url.title=" + query + "&return=enriched.url.title";
-
-    $.get(url, function(data, status) {
-        if (status !== "success") {
-            alert("Error getting news");
+    $.ajax({
+        url: 'http://ajax.googleapis.com/ajax/services/feed/load?v=1.0&num=10&callback=?&q=' + encodeURIComponent("http://www.cbc.ca/cmlink/rss-topstories"),
+        dataType: 'json',
+        success: function(data) {
+            cb(data.responseData);
         }
-
-        return cb(data);
     });
 }
 
