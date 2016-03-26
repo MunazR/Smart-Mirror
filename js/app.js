@@ -1,3 +1,4 @@
+var shortDay = new Array("Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat");
 var messageLastUpdated, weatherLastUpdated, travelLastUpdated, newsLastUpdated;
 var weatherAppId = "b3088fdcc0dd30e437a03dd8a18bc936",
     alchemyApiKey = "eaa9a9963af51af296826982a62980c6edb7af08";
@@ -67,26 +68,21 @@ function updateWeather() {
 
             var source = $("#weather-template").html();
             var template = Handlebars.compile(source);
+            var day, weather;
 
-            var todayWeather = {
-                max_temp: Math.round(current.main.temp_max),
-                min_temp: Math.round(current.main.temp_min),
-                condition_icon: "http://openweathermap.org/img/w/" + current.weather[0].icon + ".png"
-            };
+            $("#forecast-container").html("");
 
-            var tomorrowWeather = {
-                max_temp: Math.round(forecast.list[0].temp.max),
-                min_temp: Math.round(forecast.list[0].temp.min),
-                condition_icon: "http://openweathermap.org/img/w/" + forecast.list[0].weather[0].icon + ".png"
-            };
+            for (var i = 0; i < forecast.list.length; i++) {
+                day = new Date(forecast.list[i].dt * 1000);
+                weather = {
+                    max_temp: Math.round(forecast.list[i].temp.max),
+                    min_temp: Math.round(forecast.list[i].temp.min),
+                    condition_icon: "http://openweathermap.org/img/w/" + forecast.list[i].weather[0].icon + ".png",
+                    day: shortDay[day.getDay()]
+                };
 
-            var dayAfterWeather = {
-                max_temp: Math.round(forecast.list[1].temp.max),
-                min_temp: Math.round(forecast.list[1].temp.min),
-                condition_icon: "http://openweathermap.org/img/w/" + forecast.list[1].weather[0].icon + ".png"
-            };
-
-            $("#forecast-container").html(template(todayWeather) + template(tomorrowWeather) + template(dayAfterWeather));
+                $("#forecast-container").append(template(weather));
+            }
         });
     }
 }
@@ -176,7 +172,6 @@ function refreshWeatherInfo(cb) {
     }
 
     var url = "http://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lng + "&units=" + unit + "&appid=" + weatherAppId;
-    var currentWeather, forecastWeather;
 
     $.get(url, function(data, status) {
         if (status !== "success") {
@@ -185,7 +180,7 @@ function refreshWeatherInfo(cb) {
 
         currentWeather = data;
 
-        url = "http://api.openweathermap.org/data/2.5/forecast/daily?lat=" + lat + "&lon=" + lng + "&units=" + unit + "&cnt=2&mode=json&appid=" + weatherAppId;
+        url = "http://api.openweathermap.org/data/2.5/forecast/daily?lat=" + lat + "&lon=" + lng + "&units=" + unit + "&cnt=3&mode=json&appid=" + weatherAppId;
 
         $.get(url, function(data, status) {
             if (status !== "success") {
