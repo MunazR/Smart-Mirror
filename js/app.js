@@ -1,13 +1,11 @@
 var shortDay = new Array("Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat");
-var messageLastUpdated, weatherLastUpdated, travelLastUpdated, newsLastUpdated;
+var messageLastUpdated, newsLastUpdated;
 var weatherAppId = "b3088fdcc0dd30e437a03dd8a18bc936";
 
 var newsHeadlines = [],
     newsIndex = 0;
 
 $(function() {
-    console.log("Ready to start!");
-
     var updateEnabled = getParameterByName("update");
 
     updateMessage();
@@ -56,46 +54,34 @@ function updateMessage() {
 }
 
 function updateWeather() {
-    var now = new Date();
+    refreshWeatherInfo(function(current, forecast) {
+        $("#location").html(current.name);
+        $("#current-temp").html("It is currently " + Math.round(current.main.temp) + "&#8451");
 
-    if (!weatherLastUpdated || weatherLastUpdated.getHours() !== now.getHours()) {
-        weatherLastUpdated = now;
+        var source = $("#weather-template").html();
+        var template = Handlebars.compile(source);
+        var day, weather;
 
-        refreshWeatherInfo(function(current, forecast) {
-            $("#location").html(current.name);
-            $("#current-temp").html("It is currently " + Math.round(current.main.temp) + "&#8451");
+        $("#forecast-container").html("");
 
-            var source = $("#weather-template").html();
-            var template = Handlebars.compile(source);
-            var day, weather;
+        for (var i = 0; i < forecast.list.length; i++) {
+            day = new Date(forecast.list[i].dt * 1000);
+            weather = {
+                max_temp: Math.round(forecast.list[i].temp.max),
+                min_temp: Math.round(forecast.list[i].temp.min),
+                condition_icon: "http://openweathermap.org/img/w/" + forecast.list[i].weather[0].icon + ".png",
+                day: shortDay[day.getDay()]
+            };
 
-            $("#forecast-container").html("");
-
-            for (var i = 0; i < forecast.list.length; i++) {
-                day = new Date(forecast.list[i].dt * 1000);
-                weather = {
-                    max_temp: Math.round(forecast.list[i].temp.max),
-                    min_temp: Math.round(forecast.list[i].temp.min),
-                    condition_icon: "http://openweathermap.org/img/w/" + forecast.list[i].weather[0].icon + ".png",
-                    day: shortDay[day.getDay()]
-                };
-
-                $("#forecast-container").append(template(weather));
-            }
-        });
-    }
+            $("#forecast-container").append(template(weather));
+        }
+    });
 }
 
 function updateTravel() {
-    var now = new Date();
-
-    if (!travelLastUpdated || travelLastUpdated.getHours() !== now.getHours()) {
-        travelLastUpdated = now;
-
-        refreshTravelInfo(function(travelData) {
-            $("#travel-time").html("Time to work: " + travelData.rows[0].elements[0].duration.text);
-        });
-    }
+    refreshTravelInfo(function(travelData) {
+        $("#travel-time").html("Time to work: " + travelData.rows[0].elements[0].duration.text);
+    });
 }
 
 function updateNews() {
@@ -140,7 +126,8 @@ function refreshMessageInfo(cb) {
 
     $.get(url, function(data, status) {
         if (status !== "success") {
-            alert("Error getting sunrise/sunset times");
+            console.log("Error getting sunrise/sunset times");
+            return;
         }
 
         var sunrise = new Date(data.results.sunrise);
@@ -174,7 +161,8 @@ function refreshWeatherInfo(cb) {
 
     $.get(url, function(data, status) {
         if (status !== "success") {
-            alert("Error getting current weather");
+            console.log("Error getting current weather");
+            return;
         }
 
         currentWeather = data;
@@ -183,7 +171,8 @@ function refreshWeatherInfo(cb) {
 
         $.get(url, function(data, status) {
             if (status !== "success") {
-                alert("Error getting weather forecast");
+                console.log("Error getting weather forecast");
+                return;
             }
 
             forecastWeather = data;
@@ -214,7 +203,8 @@ function refreshTravelInfo(cb) {
         travelMode: google.maps.TravelMode.DRIVING
     }, function(response, status) {
         if (status !== "OK") {
-            alert("Error getting travel data");
+            console.log("Error getting travel data");
+            return;
         }
 
         cb(response);
