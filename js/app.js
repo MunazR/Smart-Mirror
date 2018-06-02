@@ -1,6 +1,7 @@
 var shortDay = new Array("Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat");
 var messageLastUpdated, newsLastUpdated;
 var weatherAppId = "b3088fdcc0dd30e437a03dd8a18bc936";
+var newsApiKey = "4c36663b0bc64b17a44a1d9a9eb66e1d";
 
 var newsHeadlines = [],
     newsIndex = 0;
@@ -91,8 +92,8 @@ function updateNews() {
         newsLastUpdated = now;
 
         refreshNewsInfo(function(data) {
-            if (data && data.feed && data.feed.entries && data.feed.entries.length) {
-                var newsData = data.feed.entries;
+            if (data && data.articles) {
+                var newsData = data.articles;
                 newsHeadlines = [];
                 newsIndex = 0;
 
@@ -213,10 +214,10 @@ function refreshTravelInfo(cb) {
 
 function refreshNewsInfo(cb) {
     $.ajax({
-        url: 'http://ajax.googleapis.com/ajax/services/feed/load?v=1.0&num=10&callback=?&q=' + encodeURIComponent("http://www.cbc.ca/cmlink/rss-topstories"),
+        url: 'https://newsapi.org/v2/top-headlines?country=ca&apiKey=' + newsApiKey,
         dataType: 'json',
         success: function(data) {
-            cb(data.responseData);
+            cb(data);
         }
     });
 }
