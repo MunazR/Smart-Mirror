@@ -70,7 +70,7 @@ function updateWeather() {
             weather = {
                 max_temp: Math.round(forecast.list[i].temp.max),
                 min_temp: Math.round(forecast.list[i].temp.min),
-                condition_icon: "http://openweathermap.org/img/w/" + forecast.list[i].weather[0].icon + ".png",
+                condition_icon: "https://openweathermap.org/img/w/" + forecast.list[i].weather[0].icon + ".png",
                 day: shortDay[day.getDay()]
             };
 
@@ -123,7 +123,7 @@ function refreshMessageInfo(cb) {
         return;
     }
 
-    var url = "http://api.sunrise-sunset.org/json?lat=" + lat + "&lng=" + lng + "&formatted=0&date=today";
+    var url = "https://api.sunrise-sunset.org/json?lat=" + lat + "&lng=" + lng + "&formatted=0&date=today";
 
     $.get(url, function(data, status) {
         if (status !== "success") {
@@ -158,7 +158,7 @@ function refreshWeatherInfo(cb) {
         return;
     }
 
-    var url = "http://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lng + "&units=" + unit + "&appid=" + weatherAppId;
+    var url = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lng + "&units=" + unit + "&appid=" + weatherAppId;
 
     $.get(url, function(data, status) {
         if (status !== "success") {
@@ -168,7 +168,7 @@ function refreshWeatherInfo(cb) {
 
         currentWeather = data;
 
-        url = "http://api.openweathermap.org/data/2.5/forecast/daily?lat=" + lat + "&lon=" + lng + "&units=" + unit + "&cnt=3&mode=json&appid=" + weatherAppId;
+        url = "https://api.openweathermap.org/data/2.5/forecast/daily?lat=" + lat + "&lon=" + lng + "&units=" + unit + "&cnt=3&mode=json&appid=" + weatherAppId;
 
         $.get(url, function(data, status) {
             if (status !== "success") {
