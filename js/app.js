@@ -1,12 +1,12 @@
 var shortDay = new Array("Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat");
 var messageLastUpdated, newsLastUpdated;
 var weatherAppId = "b3088fdcc0dd30e437a03dd8a18bc936";
-var newsApiKey = "4c36663b0bc64b17a44a1d9a9eb66e1d";
+var newsApiKey = "mlVe9vlcbJpdWgmXB3vG3tSUYMu0hPQY";
 
 var newsHeadlines = [],
     newsIndex = 0;
 
-$(function() {
+$(function () {
     var updateEnabled = getParameterByName("update");
 
     updateMessage();
@@ -27,7 +27,7 @@ function updateMessage() {
     if (!messageLastUpdated || messageLastUpdated.getHours() !== now.getHours()) {
         messageLastUpdated = now;
 
-        refreshMessageInfo(function(sunrise, noon, sunset, eveningStart, eveningEnd) {
+        refreshMessageInfo(function (sunrise, noon, sunset, eveningStart, eveningEnd) {
             var message = "";
             var name = getParameterByName("name");
 
@@ -55,7 +55,7 @@ function updateMessage() {
 }
 
 function updateWeather() {
-    refreshWeatherInfo(function(current, forecast) {
+    refreshWeatherInfo(function (current, forecast) {
         $("#location").html(current.name);
         $("#current-temp").html("It is currently " + Math.round(current.main.temp) + "&#8451");
 
@@ -80,7 +80,7 @@ function updateWeather() {
 }
 
 function updateTravel() {
-    refreshTravelInfo(function(travelData) {
+    refreshTravelInfo(function (travelData) {
         $("#travel-time").html("Time to work: " + travelData.rows[0].elements[0].duration.text);
     });
 }
@@ -91,9 +91,9 @@ function updateNews() {
     if (!newsLastUpdated || newsLastUpdated.getHours() !== now.getHours()) {
         newsLastUpdated = now;
 
-        refreshNewsInfo(function(data) {
-            if (data && data.articles) {
-                var newsData = data.articles;
+        refreshNewsInfo(function (data) {
+            if (data && data.results) {
+                var newsData = data.results;
                 newsHeadlines = [];
                 newsIndex = 0;
 
@@ -125,7 +125,7 @@ function refreshMessageInfo(cb) {
 
     var url = "https://api.sunrise-sunset.org/json?lat=" + lat + "&lng=" + lng + "&formatted=0&date=today";
 
-    $.get(url, function(data, status) {
+    $.get(url, function (data, status) {
         if (status !== "success") {
             console.log("Error getting sunrise/sunset times");
             return;
@@ -160,7 +160,7 @@ function refreshWeatherInfo(cb) {
 
     var url = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lng + "&units=" + unit + "&appid=" + weatherAppId;
 
-    $.get(url, function(data, status) {
+    $.get(url, function (data, status) {
         if (status !== "success") {
             console.log("Error getting current weather");
             return;
@@ -170,7 +170,7 @@ function refreshWeatherInfo(cb) {
 
         url = "https://api.openweathermap.org/data/2.5/forecast/daily?lat=" + lat + "&lon=" + lng + "&units=" + unit + "&cnt=3&mode=json&appid=" + weatherAppId;
 
-        $.get(url, function(data, status) {
+        $.get(url, function (data, status) {
             if (status !== "success") {
                 console.log("Error getting weather forecast");
                 return;
@@ -202,7 +202,7 @@ function refreshTravelInfo(cb) {
         origins: [origin],
         destinations: [destination],
         travelMode: google.maps.TravelMode.DRIVING
-    }, function(response, status) {
+    }, function (response, status) {
         if (status !== "OK") {
             console.log("Error getting travel data");
             return;
@@ -214,9 +214,9 @@ function refreshTravelInfo(cb) {
 
 function refreshNewsInfo(cb) {
     $.ajax({
-        url: 'https://newsapi.org/v2/top-headlines?country=ca&apiKey=' + newsApiKey,
+        url: 'https://api.nytimes.com/svc/topstories/v2/world.json?api-key=' + newsApiKey,
         dataType: 'json',
-        success: function(data) {
+        success: function (data) {
             cb(data);
         }
     });
