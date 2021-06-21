@@ -1,39 +1,42 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-    <link href='https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700,300' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="./css/main.css">
+  <head>
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700,300"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link rel="stylesheet" type="text/css" href="./css/main.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
     <script src="http://maps.googleapis.com/maps/api/js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <script src="./js/app.js"></script>
     <script src="./js/clock.js"></script>
     <script id="weather-template" type="text/x-handlebars-template">
-        <div class="weather-container">
-            <span class="temp">{{day}} {{min_temp}}/{{max_temp}}</span>
-            <img class="condition" src="{{condition_icon}}" />
-        </div>
+      <div class="weather-container">
+        <span class="temp">{{day}} {{min_temp}}/{{max_temp}}</span>
+        <img class="condition" src="{{condition_icon}}" />
+      </div>
     </script>
     <title>Smart Mirror</title>
-</head>
+  </head>
 
-<body>
+  <body>
     <div id="datetime-container">
-        <h1 id="date"></h1>
-        <h1 id="time"></h1>
-        <span id="travel-time"></span>
+      <h1 id="date"></h1>
+      <h1 id="time"></h1>
+      <span id="travel-time"></span>
     </div>
     <div id="weather-container">
-        <div id="location"></div>
-        <div id="current-temp"></div>
-        <div id="forecast-container"></div>
+      <div id="location"></div>
+      <div id="current-temp"></div>
+      <div id="forecast-container"></div>
     </div>
     <div id="message-container">
-        <div id="message"></div>
-        <div id="news-container">
-        </div>
+      <div id="message"></div>
+      <div id="news-container"></div>
+      <canvas id="qr-code"></canvas>
     </div>
-</body>
-
+  </body>
 </html>

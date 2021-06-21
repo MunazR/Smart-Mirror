@@ -2,12 +2,21 @@ var shortDay = new Array("Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat");
 var messageLastUpdated, newsLastUpdated;
 var weatherAppId = "b3088fdcc0dd30e437a03dd8a18bc936";
 var newsApiKey = "mlVe9vlcbJpdWgmXB3vG3tSUYMu0hPQY";
+var qr;
 
-var newsHeadlines = [],
+var newsData = [],
     newsIndex = 0;
 
 $(function () {
     var updateEnabled = getParameterByName("update");
+
+    (function () {
+        qr = new QRious({
+            element: document.getElementById('qr-code'),
+            size: 75,
+            value: 'https://munaz.dev'
+        });
+    })();
 
     updateMessage();
     updateWeather();
@@ -93,25 +102,31 @@ function updateNews() {
 
         refreshNewsInfo(function (data) {
             if (data && data.results) {
-                var newsData = data.results;
-                newsHeadlines = [];
+                newsData = data.results.map((result) => {
+                    return {
+                        title: result.title,
+                        url: result.url,
+                    }
+                });
                 newsIndex = 0;
-
-                for (var i = 0; i < newsData.length; i++) {
-                    newsHeadlines.push(newsData[i].title);
-                }
             }
         });
     } else {
-        if (newsHeadlines.length === 0) {
+        if (newsData.length === 0) {
             return;
         }
 
-        if (newsIndex === newsHeadlines.length) {
+        if (newsIndex === newsData.length) {
             newsIndex = 0;
         }
 
-        $("#news-container").html(newsHeadlines[newsIndex++]);
+        const currentNews = newsData[newsIndex++];
+        $("#news-container").html(currentNews.title);
+        qr.set({
+            foreground: 'black',
+            size: 75,
+            value: currentNews.url,
+        });
     }
 }
 
